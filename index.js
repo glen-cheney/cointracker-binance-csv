@@ -62,7 +62,7 @@ function toCointrackerDate(date) {
  * @return {TransactionPair} The transaction and its key
  */
 function getTransaction({ transactions, utcTime, remark }) {
-  const date = new Date(utcTime);
+  const date = new Date(`${utcTime}Z`);
   const seconds = Math.round(date.getTime() / 1000);
   let key = seconds.toString();
   const secondsMinusOne = (seconds - 1).toString();
