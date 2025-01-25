@@ -37,13 +37,16 @@ const TransactionOperation = {
   WITHDRAW: 'Withdraw',
 };
 
+/**
+ * @param {Date} date
+ */
 function toCointrackerDate(date) {
-  const year = date.getFullYear();
-  const month = `${date.getMonth() + 1}`.padStart(2, '0');
-  const day = `${date.getDate()}`.padStart(2, '0');
-  const hours = `${date.getHours()}`.padStart(2, '0');
-  const minutes = `${date.getMinutes()}`.padStart(2, '0');
-  const seconds = `${date.getSeconds()}`.padStart(2, '0');
+  const year = date.getUTCFullYear();
+  const month = `${date.getUTCMonth() + 1}`.padStart(2, '0');
+  const day = `${date.getUTCDate()}`.padStart(2, '0');
+  const hours = `${date.getUTCHours()}`.padStart(2, '0');
+  const minutes = `${date.getUTCMinutes()}`.padStart(2, '0');
+  const seconds = `${date.getUTCSeconds()}`.padStart(2, '0');
   return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}`;
 }
 
@@ -53,13 +56,14 @@ function toCointrackerDate(date) {
  * If no transaction is found, it creates a new transaction with the provided date and remark.
  *
  * @param {Object} params - The parameters for the function.
- * @param {number} params.seconds - The timestamp in seconds to look for.
  * @param {Map<string, Transaction>} params.transactions - A map of transactions keyed by timestamp.
- * @param {Date} params.date - The date of the transaction to create if no match is found.
+ * @param {string} params.utcTime - UTC date time string
  * @param {string} params.remark - The remark for the transaction to create if no match is found.
  * @return {TransactionPair} The transaction and its key
  */
-function getTransaction({ seconds, transactions, date, remark }) {
+function getTransaction({ transactions, utcTime, remark }) {
+  const date = new Date(utcTime);
+  const seconds = Math.round(date.getTime() / 1000);
   let key = seconds.toString();
   const secondsMinusOne = (seconds - 1).toString();
   const secondsPlusOne = (seconds + 1).toString();
@@ -108,9 +112,7 @@ async function main() {
   const txns = new Map();
   for (let i = 0; i < records.length; i++) {
     const [userId, utcTime, account, operation, coin, change, remark] = records[i];
-    const date = new Date(utcTime);
-    const seconds = Math.round(date.getTime() / 1000);
-    let { key, txn } = getTransaction({ seconds, transactions: txns, date, remark });
+    let { key, txn } = getTransaction({ transactions: txns, utcTime, remark });
 
     const debugString = `Received ${change} for ${coin} transaction on ${utcTime}.`;
 
