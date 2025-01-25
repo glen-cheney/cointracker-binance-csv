@@ -1,7 +1,7 @@
 {
   "name": "cointracker-binance-csv",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "type": "module",
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "csv": "^6.0.5",
-    "prettier": "^2.5.1"
+    "csv": "^6.3.11",
+    "prettier": "^3.4.2"
   }
 }
